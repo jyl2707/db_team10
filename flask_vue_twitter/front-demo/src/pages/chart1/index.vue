@@ -12,7 +12,7 @@
       value-format="yyyy-MM-dd"
       format="yyyy-MM-dd"
       type="daterange"
-      range-separator="至"
+      range-separator="to"
       start-placeholder="StartDate"
       end-placeholder="EndDate">
     </el-date-picker>
@@ -20,6 +20,9 @@
   </el-form-item>
   <el-form-item label="Id">
     <el-input v-model="query.id" placeholder=""></el-input>
+  </el-form-item>
+  <el-form-item label="user_name">
+    <el-input v-model="query.user_name" placeholder=""></el-input>
   </el-form-item>
   <el-form-item label="Twitter content">
     <el-input v-model="query.text" placeholder=""></el-input>
