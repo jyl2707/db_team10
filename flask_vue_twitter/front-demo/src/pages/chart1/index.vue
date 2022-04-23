@@ -9,19 +9,19 @@
     <span class="demonstration"></span>
     <el-date-picker
       v-model="createdAt"
-      value-format="yyyy-MM-dd"
-      format="yyyy-MM-dd"
-      type="daterange"
+      value-format="yyyy/MM/dd/HH/mm/ss"
+      format="yyyy-MM-dd HH:mm:ss"
+      type="datetimerange"
       range-separator="to"
       start-placeholder="StartDate"
       end-placeholder="EndDate">
     </el-date-picker>
   </div>
   </el-form-item>
-  <el-form-item label="Id">
-    <el-input v-model="query.id" placeholder=""></el-input>
+  <el-form-item label="Hashtag">
+    <el-input v-model="query.hashtag" placeholder=""></el-input>
   </el-form-item>
-  <el-form-item label="user_name">
+  <el-form-item label="User_name">
     <el-input v-model="query.user_name" placeholder=""></el-input>
   </el-form-item>
   <el-form-item label="Twitter content">
@@ -34,6 +34,7 @@
   </div>
    <el-table
     :data="tableData"
+    @sort-change="sortRetweets"
     border
     style="width: 100%">
     <el-table-column
@@ -57,6 +58,7 @@
     </el-table-column>
     <el-table-column
       prop="retweet_num"
+      sortable="custom"
       label="The number of retweet">
     </el-table-column>
   </el-table>
@@ -69,6 +71,17 @@
       :total="dataCount">
     </el-pagination>
 </el-card>
+<el-button type="text" @click="dialogTableVisible = true">Dialog</el-button>
+
+<el-dialog title="UserLis tO rReteetList" :visible.sync="dialogTableVisible">
+  <el-table :data="gridData">
+    <el-table-column property="date" label="date" width="150"></el-table-column>
+    <el-table-column property="name" label="name" width="200"></el-table-column>
+    <el-table-column property="address" label="url"></el-table-column>
+  </el-table>
+</el-dialog>
+
+
   </main>
 </template>
 
@@ -81,7 +94,25 @@ export default {
       dataCount: 0,
       chart_data: [],
       loop: undefined,
+          gridData: [{
+          date: '2016-05-02',
+          name: 'Mr. Li',
+          address: 'address'
+        }, {
+          date: '2016-05-04',
+          name: 'Mr. Li',
+          address: 'address'
+        }, {
+          date: '2016-05-01',
+          name: 'Mr. Li',
+          address: 'address'
+        }, {
+          date: '2016-05-03',
+          name: 'Mr. Li',
+          address: 'address'
+        }],
       tableData: [],
+      dialogTableVisible: false,
       createdAt: '',
       query: {
         size: 5,
@@ -95,6 +126,11 @@ export default {
       this.loop = setInterval(()=>this.fetchCharts(), 125 << 8)
   },
   methods: {
+    sortRetweets(column) {
+      const key = column.column.label.split(' ')[column.column.label.split(' ').length -1 ]
+      this.query[key] = column.order
+      this.fetchCharts()
+    },
     handleSizeChange(val) {
       this.query.size = val
       this.fetchCharts()
@@ -109,13 +145,33 @@ export default {
      if (this.createdAt) {
        [this.query.startDate, this.query.endDate] = this.createdAt
      }
+     if (this.query.hashtag && (this.query.startDate || this.query.user_name || this.text)){
+       this.$message.error('Multiple search conditions are not supported')
+       return
+     }
+     if (this.query.startDate && (this.query.hashtag || this.query.user_name || this.text)){
+       this.$message.error('Multiple search conditions are not supported')
+       return
+     }
+     if (this.query.user_name && (this.query.startDate || this.query.hashtag || this.text)){
+       this.$message.error('Multiple search conditions are not supported')
+       return
+     }
+     if (this.query.text && (this.query.startDate || this.query.user_name || this.hashtag)){
+       this.$message.error('Multiple search conditions are not supported')
+       return
+     }
       this.axios.get("/chart", {
         params: this.query
       }).then(res => {
         let { data } = res.data;
         this.tableData = data.charts
-        this.dataCount = res.data.counts
-      });
+        // this.dataCount = res.data.counts
+      }).catch(err => {
+        console.error(err)
+        this.$message.error('Network error')
+      })
+      
     },
   },
   beforeDestroy() {
