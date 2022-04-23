@@ -38,10 +38,10 @@ def tags_search(tags):
     tags = tags.split("#")
     tags.remove(tags[0])
     tags = " ".join(tags)
-    origin.searcht = origin_tagst.find({"$text": {"$search": tags}},  {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
-    origin.searchf=origin_tagsf.find({"$text": {"$search": tags}},  {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
-    quote.searcht=quote_tagst.find({"$text": {"$search": tags}},  {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
-    quote.searchf=quote_tagsf.find({"$text": {"$search": tags}},  {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    origin.searcht = origin_tagst.find({"$text": {"$search": tags}},  {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    origin.searchf=origin_tagsf.find({"$text": {"$search": tags}},  {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    quote.searcht=quote_tagst.find({"$text": {"$search": tags}},  {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    quote.searchf=quote_tagsf.find({"$text": {"$search": tags}},  {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
     if (origin_tagst.count_documents({"$text": {"$search": tags}})>0):
         search.insert_many(origin.searcht)
     if (origin_tagsf.count_documents({"$text": {"$search": tags}})>0):
@@ -65,10 +65,29 @@ def fetch_by_hashtags(tags):
     else:
         lst_results = []
         for item in results:
+            print(item)
+            item['_id'] = ''
+            try:
+                item['text'] = item['text'].replace("'", "-")
+                _item_s = str(item).replace("'", '"')
+                json.loads(_item_s)
+
+                # item['text'] = item['text'].replace('"', "-")
+                # item['user']['name'] ='''' item['user']['name'].replace("'", '')
+                # item['user']['name'] = item['user']['name'].replace('"', '')
+                # item = JSONEncoder().encode(item)
+                lst_results.append(json.dumps(item))
+
+            except Exception as e:
+                print(e)
+                continue
+
             # item = JSONEncoder().encode(item)
-            lst_results.append(str(item))
-        make_str = ''.join(item for item in lst_results)
+
+        make_str = ','.join(item for item in lst_results)
+        make_str = '[' + make_str + ']'
         redis_store.setex(tags, 25, make_str)
+        print(make_str)
         return make_str
 
 def get_by_hashtags(tags):
@@ -83,10 +102,10 @@ def get_by_hashtags(tags):
 
 ## search by word
 def words_search(words):
-    origin_searcht=origin_t.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
-    origin_searchf=origin_f.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
-    quote_searcht=quote_t.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
-    quote_searchf=quote_f.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    origin_searcht=origin_t.find({"text": {"$regex": words}}, {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    origin_searchf=origin_f.find({"text": {"$regex": words}}, {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    quote_searcht=quote_t.find({"text": {"$regex": words}}, {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    quote_searchf=quote_f.find({"text": {"$regex": words}}, {'_id':0, 'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
     if (origin_t.count_documents({"$text": {"$search": words}})>0):
         search.insert_many(origin_searcht)
     if (origin_f.count_documents({"$text": {"$search": words}})>0):
@@ -109,9 +128,12 @@ def fetch_by_words(words):
     else:
         lst_results = []
         for item in results:
+            item['_id'] = ''
+            item['text'] = item['text'].replace("'", "")
             # item = JSONEncoder().encode(item)
             lst_results.append(str(item))
-        make_str = ''.join(item for item in lst_results)
+        make_str = ','.join(item for item in lst_results)
+        make_str = '[' + make_str + ']'
         redis_store.setex(words, 60, make_str)
         return make_str
 
@@ -126,7 +148,7 @@ def get_by_words(words):
 
 def search_by_time(start, end):
 
-    results = tweets.find({"timestamp": {"$gte": start, "$lte": end}}, {'created_at': 1, 'id_str': 1, 'user': {'name': 1}, 'text':1})
+    results = tweets.find({"timestamp": {"$gte": start, "$lte": end}}, {'_id': 0, 'created_at': 1, 'id_str': 1, 'user': {'name': 1}, 'text':1})
     if (tweets.count_documents({"timestamp": {"$gte": start, "$lte":end}})>0):
         pass
     else:
@@ -141,9 +163,12 @@ def fetch_by_time(start, end):
     else:
         lst_results = []
         for item in results:
+            item['_id'] = ''
+            item['text'] = item['text'].replace("'", "")
             # item = JSONEncoder().encode(item)
             lst_results.append(str(item))
-        make_str = ''.join(item for item in lst_results)
+        make_str = ','.join(item for item in lst_results)
+        make_str = '[' + make_str + ']'
         redis_store.setex(start, 60, make_str)
         return make_str
 

@@ -38,7 +38,7 @@
     border
     style="width: 100%">
     <el-table-column
-      prop="id"
+      prop="id_str"
       label="ID"
       width="180">
     </el-table-column>
@@ -123,7 +123,6 @@ export default {
   },
   mounted() {
       this.fetchCharts()
-      this.loop = setInterval(()=>this.fetchCharts(), 125 << 8)
   },
   methods: {
     sortRetweets(column) {
@@ -166,17 +165,22 @@ export default {
       }).then(res => {
         let { data } = res.data;
         try {
+          // data = data.replaceAll(`'t`, ` not`)
+          // data = data.replaceAll(`'`, `"`)
+          console.log('data: ', data)
           data = JSON.parse(data)
           if (!(data instanceof Array)) {
-            data = [data]
+            // data = [data]
           }
+          console.log('data parsed: ', data)
           this.tableData = data 
         } catch(err) {
-          this.$messag.error(JSON.stringify(err))
+          console.log('err:', err)
+          // . this.$message.error(JSON.stringify(err))
         }
         // this.dataCount = res.data.counts
       }).catch(err => {
-        console.error(err)
+        // console.error(err)
         this.$message.error('Network error')
       })
       

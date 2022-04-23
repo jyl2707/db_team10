@@ -3,10 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="173d9fdd-c21a-46ab-82df-398280920e06" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/info/api/chart/chart.py" beforeDir="false" afterPath="$PROJECT_DIR$/info/api/chart/chart.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/info/api/chart/demo01.py" beforeDir="false" afterPath="$PROJECT_DIR$/info/api/chart/demo01.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/info/api/chart/search_application.py" beforeDir="false" afterPath="$PROJECT_DIR$/info/api/chart/search_application.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/logs/log" beforeDir="false" afterPath="$PROJECT_DIR$/logs/log" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../front-demo/src/pages/chart1/index.vue" beforeDir="false" afterPath="$PROJECT_DIR$/../front-demo/src/pages/chart1/index.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -137,7 +136,7 @@
       <workItem from="1650200628961" duration="1130000" />
       <workItem from="1650204221439" duration="3665000" />
       <workItem from="1650586810154" duration="5190000" />
-      <workItem from="1650673573605" duration="16348000" />
+      <workItem from="1650673573605" duration="24199000" />
     </task>
     <servers />
   </component>
