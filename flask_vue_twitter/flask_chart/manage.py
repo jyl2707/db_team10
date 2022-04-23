@@ -3,7 +3,7 @@ import pymysql
 from flask_cors import CORS
 from flask_script import Manager
 # 导入migrate扩展
-from flask_migrate import Migrate,MigrateCommand
+from flask_migrate import Migrate, MigrateCommand
 
 from info import create_app, db, models
 pymysql.install_as_MySQLdb()

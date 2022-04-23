@@ -7,7 +7,7 @@ from config import config_dict, Config
 import pymongo
 
 mongo_store = pymongo.MongoClient(host=Config.MONGODB_HOST, port=Config.MONGODB_PORT)
-mongo_db = mongo_store.twitter
+mongo_db = mongo_store
 
 
 db = SQLAlchemy()

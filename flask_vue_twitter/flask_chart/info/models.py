@@ -34,11 +34,20 @@ class Chart1(BaseModel, db.Model):
 
 class User(BaseModel, db.Model):
 
-    __tablename__ = "user"
+    __tablename__ = "User"
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(32), nullable=False)
-    profile_image_ur = db.Column(db.String(32), nullable=False)
+    location = db.Column(db.String(32), nullable=True)
+    url = db.Column(db.String(32), nullable=True)
+    description = db.Column(db.String(32), nullable=True)
+    protected = db.Column(db.String(32), nullable=True)
+    verified = db.Column(db.String(32), nullable=True)
+    created_at = db.Column(db.String(32), nullable=True)
+    contributors_enabled = db.Column(db.String(32), nullable=True)
+    follow_request_sent = db.Column(db.String(32), nullable=True)
+    notifications = db.Column(db.String(32), nullable=True)
+
     # twitters = db.relationship('Chart1',
     #     uselist=True,
     #     backref='user', 
@@ -48,9 +57,25 @@ class User(BaseModel, db.Model):
         resp_dict = {
             "name":
                 self.name,
-            "profile_image_ur":
-                self.profile_image_ur,
             "id":
                 self.id,
+            "location":
+                self.location,
+            "url":
+                self.url,
+            "description":
+                self.description,
+            "protected":
+                self.protected,
+            "verified":
+                self.verified,
+            "created_at":
+                self.created_at,
+            "contributors_enabled":
+                self.contributors_enabled,
+            "follow_request_sent":
+                self.follow_request_sent,
+            "notifications":
+                self.notifications,
         }
         return resp_dict
