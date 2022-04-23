@@ -178,7 +178,7 @@ export default {
           this.tableData = []
           // this.$message.error(JSON.stringify(err))
         }
-        // this.dataCount = res.data.counts
+        this.dataCount = res.data.counts
       }).catch(err => {
         // console.error(err)
         this.tableData = []

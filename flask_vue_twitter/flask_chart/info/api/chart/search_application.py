@@ -34,7 +34,7 @@ origin_tagst = db1["origin_tagst"]
 origin_tagsf = db1["origin_tagsf"]
 
 
-def tags_search(tags):
+def tags_search(tags, skip, limit):
     tags = tags.split("#")
     tags.remove(tags[0])
     tags = " ".join(tags)
@@ -51,13 +51,17 @@ def tags_search(tags):
     if (quote_tagsf.count_documents({"$text": {"$search": tags}})>0):
         search.insert_many(quote.searchf)
     if (search.count_documents({})>0):
-        cur = search.find().sort("created_at", pymongo.DESCENDING)
+        cur = search.find().sort("created_at", pymongo.DESCENDING).skip(skip).limit(limit)
     else:
         cur = "Sorry, there are no such hashtags in our database"
     return cur
 
-def fetch_by_hashtags(tags):
-    results = tags_search(tags)
+def fetch_by_htags_searchashtags(tags, skip, limit):
+    # skips = page_size * (page_num - 1)
+
+    # Skip and limit
+    # cursor = db['students'].find().skip(skips).limit(page_size)
+    results = tags_search(tags, skip, limit)
     if (type(results) == str):
         str0 = ''
         return str0
@@ -81,14 +85,14 @@ def fetch_by_hashtags(tags):
         redis_store.setex(tags, 25, make_str)
         return make_str
 
-def get_by_hashtags(tags):
+def get_by_hashtags(tags, skip, index):
     if not tags:
         return 'no tags param'
     if (search.count_documents({}) > 0):
         search.drop()
     result = redis_store.get(tags)
     if not result:
-        result = fetch_by_hashtags(tags)
+        result = fetch_by_htags_searchashtags(tags, skip, index)
     return result
 
 ## search by word

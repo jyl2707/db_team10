@@ -26,8 +26,9 @@ def chart():
         end_date = request.args.get('endDate')
         page_index = request.args.get('page') or 1
         page_size = request.args.get('size') or 10
+        skip = int(page_size) * (int(page_index) - 1)
         if hashtag:
-            res_data = search_application.get_by_hashtags(hashtag)
+            res_data = search_application.get_by_hashtags(hashtag, skip, int(page_size))
         elif text:
             res_data = search_application.get_by_words(text)
         elif start_date and end_date:
@@ -35,7 +36,7 @@ def chart():
         else:
             res_data = ''
 
-        return jsonify(errno=RET.OK, errmsg='OK', data=res_data)
+        return jsonify(errno=RET.OK, errmsg='OK', data=res_data, counts=5000)
 
 @chart_print.route('/chart', methods=['GET'])
 def chart1():
