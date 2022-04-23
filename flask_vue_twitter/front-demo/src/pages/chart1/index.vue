@@ -9,8 +9,7 @@
     <span class="demonstration"></span>
     <el-date-picker
       v-model="createdAt"
-      value-format="yyyy/MM/dd/HH/mm/ss"
-      format="yyyy-MM-dd HH:mm:ss"
+      value-format="HH/mm/ss/MM/dd/yyyy"
       type="datetimerange"
       range-separator="to"
       start-placeholder="StartDate"

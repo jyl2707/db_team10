@@ -146,7 +146,8 @@ def get_by_words(words):
 
 
 def search_by_time(start, end):
-
+    print('检索日期:')
+    print(start, end)
     results = tweets.find({"timestamp": {"$gte": start, "$lte": end}}, {'_id': 0, 'created_at': 1, 'id_str': 1, 'user': {'name': 1}, 'text':1})
     if (tweets.count_documents({"timestamp": {"$gte": start, "$lte":end}})>0):
         pass
@@ -184,8 +185,8 @@ def get_by_time(start, end):
     if(search.count_documents({})>0):
         search.drop()
     # start = time.mktime(datetime.datetime.strptime(start, "%m/%d/%Y").timetuple())
-    start = time.mktime(datetime.datetime.strptime(start, "%Y/%m/%d/%H/%M/%S").timetuple())
-    end = time.mktime(datetime.datetime.strptime(end, "%Y/%m/%d/%H/%M/%S").timetuple())
+    start = time.mktime(datetime.datetime.strptime(start, "%H/%M/%S/%m/%d/%Y").timetuple())
+    end = time.mktime(datetime.datetime.strptime(end, "%H/%M/%S/%m/%d/%Y").timetuple())
     result = redis_store.get(start)
     if not result:
         result = fetch_by_time(start, end)
