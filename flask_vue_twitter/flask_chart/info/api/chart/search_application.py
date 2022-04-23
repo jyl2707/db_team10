@@ -58,28 +58,20 @@ def tags_search(tags):
 
 def fetch_by_hashtags(tags):
     results = tags_search(tags)
-    print(results)
     if (type(results) == str):
         str0 = ''
         return str0
     else:
         lst_results = []
         for item in results:
-            print(item)
             item['_id'] = ''
             try:
                 item['text'] = item['text'].replace("'", "-")
                 _item_s = str(item).replace("'", '"')
                 json.loads(_item_s)
-
-                # item['text'] = item['text'].replace('"', "-")
-                # item['user']['name'] ='''' item['user']['name'].replace("'", '')
-                # item['user']['name'] = item['user']['name'].replace('"', '')
-                # item = JSONEncoder().encode(item)
                 lst_results.append(json.dumps(item))
 
             except Exception as e:
-                print(e)
                 continue
 
             # item = JSONEncoder().encode(item)
@@ -87,7 +79,6 @@ def fetch_by_hashtags(tags):
         make_str = ','.join(item for item in lst_results)
         make_str = '[' + make_str + ']'
         redis_store.setex(tags, 25, make_str)
-        print(make_str)
         return make_str
 
 def get_by_hashtags(tags):
@@ -129,9 +120,17 @@ def fetch_by_words(words):
         lst_results = []
         for item in results:
             item['_id'] = ''
-            item['text'] = item['text'].replace("'", "")
+            try:
+                item['text'] = item['text'].replace("'", "-")
+                _item_s = str(item).replace("'", '"')
+                json.loads(_item_s)
+                lst_results.append(json.dumps(item))
+
+            except Exception as e:
+                continue
+
             # item = JSONEncoder().encode(item)
-            lst_results.append(str(item))
+
         make_str = ','.join(item for item in lst_results)
         make_str = '[' + make_str + ']'
         redis_store.setex(words, 60, make_str)
@@ -164,9 +163,17 @@ def fetch_by_time(start, end):
         lst_results = []
         for item in results:
             item['_id'] = ''
-            item['text'] = item['text'].replace("'", "")
+            try:
+                item['text'] = item['text'].replace("'", "-")
+                _item_s = str(item).replace("'", '"')
+                json.loads(_item_s)
+                lst_results.append(json.dumps(item))
+
+            except Exception as e:
+                continue
+
             # item = JSONEncoder().encode(item)
-            lst_results.append(str(item))
+
         make_str = ','.join(item for item in lst_results)
         make_str = '[' + make_str + ']'
         redis_store.setex(start, 60, make_str)
@@ -176,8 +183,9 @@ def fetch_by_time(start, end):
 def get_by_time(start, end):
     if(search.count_documents({})>0):
         search.drop()
-    start = time.mktime(datetime.datetime.strptime(start, "%m/%d/%Y").timetuple())
-    end = time.mktime(datetime.datetime.strptime(end, "%m/%d/%Y").timetuple())
+    # start = time.mktime(datetime.datetime.strptime(start, "%m/%d/%Y").timetuple())
+    start = time.mktime(datetime.datetime.strptime(start, "%Y/%m/%d/%H/%M/%S").timetuple())
+    end = time.mktime(datetime.datetime.strptime(end, "%Y/%m/%d/%H/%M/%S").timetuple())
     result = redis_store.get(start)
     if not result:
         result = fetch_by_time(start, end)
