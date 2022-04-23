@@ -53,7 +53,11 @@
     </el-table-column>
     <el-table-column
       prop="user.name"
-      label="Publisher">
+      label="Author">
+    </el-table-column>
+    <el-table-column
+      prop="retweet_num"
+      label="The number of retweet">
     </el-table-column>
   </el-table>
     <el-pagination
