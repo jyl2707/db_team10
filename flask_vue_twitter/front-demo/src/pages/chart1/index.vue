@@ -165,7 +165,15 @@ export default {
         params: this.query
       }).then(res => {
         let { data } = res.data;
-        this.tableData = data.charts
+        try {
+          data = JSON.parse(data)
+          if (!(data instanceof Array)) {
+            data = [data]
+          }
+          this.tableData = data 
+        } catch(err) {
+          this.$messag.error(JSON.stringify(err))
+        }
         // this.dataCount = res.data.counts
       }).catch(err => {
         console.error(err)
