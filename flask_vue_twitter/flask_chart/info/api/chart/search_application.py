@@ -3,6 +3,9 @@ import pymongo
 import json
 from bson import ObjectId
 from info import redis_store
+import time
+import datetime
+
 
 
 class JSONEncoder(json.JSONEncoder):
@@ -55,7 +58,6 @@ def tags_search(tags):
 
 def fetch_by_hashtags(tags):
     results = tags_search(tags)
-    print('query result from pymongo : ')
     print(results)
     if (type(results) == str):
         str0 = ''
@@ -69,18 +71,89 @@ def fetch_by_hashtags(tags):
         redis_store.setex(tags, 25, make_str)
         return make_str
 
-
 def get_by_hashtags(tags):
     if not tags:
         return 'no tags param'
     if (search.count_documents({}) > 0):
         search.drop()
     result = redis_store.get(tags)
-    print('get from redis')
-    print(result)
     if not result:
         result = fetch_by_hashtags(tags)
     return result
 
+## search by word
+def words_search(words):
+    origin_searcht=origin_t.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    origin_searchf=origin_f.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    quote_searcht=quote_t.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    quote_searchf=quote_f.find({"text": {"$regex": words}}, {'created_at':1,'id_str':1, 'user':{'name': 1}, 'text':1})
+    if (origin_t.count_documents({"$text": {"$search": words}})>0):
+        search.insert_many(origin_searcht)
+    if (origin_f.count_documents({"$text": {"$search": words}})>0):
+        search.insert_many(origin_searchf)
+    if (quote_t.count_documents({"$text": {"$search": words}})>0):
+        search.insert_many(quote_searcht)
+    if (quote_f.count_documents({"$text": {"$search": words}})>0):
+        search.insert_many(quote_searchf)
+    if (search.count_documents({})>0):
+        cur=search.find().sort("created_at", pymongo.DESCENDING)
+    else:
+        cur="Sorry, there are no such words in our database"
+    return cur
+
+def fetch_by_words(words):
+    results = words_search(words)
+    if (type(results) == str):
+        str0 = ''
+        return str0
+    else:
+        lst_results = []
+        for item in results:
+            # item = JSONEncoder().encode(item)
+            lst_results.append(str(item))
+        make_str = ''.join(item for item in lst_results)
+        redis_store.setex(words, 60, make_str)
+        return make_str
+
+def get_by_words(words):
+    if(search.count_documents({})>0):
+        search.drop()
+    result = redis_store.get(words)
+    if not result:
+        result = fetch_by_words(words)
+    return result
 
 
+def search_by_time(start, end):
+
+    results = tweets.find({"timestamp": {"$gte": start, "$lte": end}}, {'created_at': 1, 'id_str': 1, 'user': {'name': 1}, 'text':1})
+    if (tweets.count_documents({"timestamp": {"$gte": start, "$lte":end}})>0):
+        pass
+    else:
+        results = "Out of time range"
+    return results
+
+def fetch_by_time(start, end):
+    results = search_by_time(start, end)
+    if(type(results)==str):
+        str0 = ''
+        return str0
+    else:
+        lst_results = []
+        for item in results:
+            # item = JSONEncoder().encode(item)
+            lst_results.append(str(item))
+        make_str = ''.join(item for item in lst_results)
+        redis_store.setex(start, 60, make_str)
+        return make_str
+
+
+def get_by_time(start, end):
+    if(search.count_documents({})>0):
+        search.drop()
+    start = time.mktime(datetime.datetime.strptime(start, "%m/%d/%Y").timetuple())
+    end = time.mktime(datetime.datetime.strptime(end, "%m/%d/%Y").timetuple())
+    result = redis_store.get(start)
+    if not result:
+        result = fetch_by_time(start, end)
+    return result
