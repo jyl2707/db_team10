@@ -19,7 +19,7 @@ from sqlalchemy import func, and_
 def chart():
     if request.method == 'GET':
         text = request.args.get('text')
-        hashtag = request.args.get('id')
+        hashtag = request.args.get('hashtag')
         if hashtag:
             hashtag = '#' + hashtag
         start_date = request.args.get('startDate')
