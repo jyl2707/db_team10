@@ -82,7 +82,7 @@ def fetch_by_htags_searchashtags(tags, skip, limit):
 
         make_str = ','.join(item for item in lst_results)
         make_str = '[' + make_str + ']'
-        redis_store.setex(tags, 25, make_str)
+        redis_store.setex(str(skip)+tags, 25, make_str)
         return make_str
 
 def get_by_hashtags(tags, skip, index):
@@ -90,7 +90,7 @@ def get_by_hashtags(tags, skip, index):
         return 'no tags param'
     if (search.count_documents({}) > 0):
         search.drop()
-    result = redis_store.get(tags)
+    result = redis_store.get(str(skip) + tags)
     if not result:
         result = fetch_by_htags_searchashtags(tags, skip, index)
     return result
